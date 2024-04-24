@@ -97,4 +97,4 @@ Contributions to the Metrics package are welcome! If you find any issues or have
 
 ## License
 
-The Metrics package is open-source and released under the [MIT License](LICENSE).
+The Metrics package is open-source and released under the [MIT License](../LICENSE).

@@ -1,6 +1,6 @@
 # Telemetry Package
 
-The Telemetry package is a Go library that provides a set of utilities for logging, metrics, and tracing in Go applications. It integrates with the OpenTelemetry framework to provide a standardized way of collecting and exporting telemetry data.
+The Telemetry package is a Go library that provides a set of utgo buililities for logging, metrics, and tracing in Go applications. It integrates with the OpenTelemetry framework to provide a standardized way of collecting and exporting telemetry data.
 
 ## Features
 

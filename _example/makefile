@@ -1,13 +1,13 @@
 .PHONY: complete logging metrics tracing
 
 complete:
-	go run ./complete/example.go
+	go run ./complete/main.go
 
 logging:
-	go run ./logging/example.go
+	go run ./logging/main.go
 
 metrics:
-	go run ./metrics/example.go
+	go run ./metrics/main.go
 
 tracing:
-	go run ./tracing/example.go
+	go run ./tracing/main.go

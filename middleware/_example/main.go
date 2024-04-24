@@ -58,7 +58,7 @@ func main() {
 	router := gin.New()
 
 	// Register the TelemetryMiddleware
-	router.Use(gin.Recovery(), gmw.TelemetryMiddleware(attribs))
+	router.Use(gin.Recovery(), gmw.Telemetry(attribs))
 
 	// Define a simple route
 	router.GET("/hello", func(c *gin.Context) {

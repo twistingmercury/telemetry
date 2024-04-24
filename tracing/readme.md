@@ -114,4 +114,4 @@ Contributions to the Tracing package are welcome! If you find any issues or have
 
 ## License
 
-The Tracing package is open-source and released under the [MIT License](LICENSE).
+The Tracing package is open-source and released under the [MIT License](../LICENSE).

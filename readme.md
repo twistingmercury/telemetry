@@ -1,6 +1,6 @@
 [![CodeQL](https://github.com/twistingmercury/telemetry/actions/workflows/codeql.yml/badge.svg)](https://github.com/twistingmercury/telemetry/actions/workflows/codeql.yml)
 [![Run Tests](https://github.com/twistingmercury/telemetry/actions/workflows/go.yml/badge.svg?branch=main)](https://github.com/twistingmercury/telemetry/actions/workflows/go.yml)
-# Telemetry Packag
+# Telemetry Package
 
 The Telemetry package is a Go library that provides a set of utgo buililities for logging, metrics, and tracing in Go applications. It integrates with the OpenTelemetry framework to provide a standardized way of collecting and exporting telemetry data.
 

@@ -88,37 +88,37 @@ func Telemetry(attribs attributes.Attributes) gonic.HandlerFunc {
 // SpanStatus returns the OpenTelemetry status code as defined in
 // go.opentelemetry.io/old_elemetry/codes and a brief description for a given HTTP status code.
 func SpanStatus(status int) (code otelCodes.Code, desc string) {
-	switch status {
-	case 200:
+	switch {
+	case status >= 200 && status < 300:
 		code = otelCodes.Ok
 		desc = "OK"
-	case 400:
+	case status == 400:
 		code = otelCodes.Ok
 		desc = "Bad Request"
-	case 401:
+	case status == 401:
 		code = otelCodes.Ok
 		desc = "Unauthorized"
-	case 403:
+	case status == 403:
 		code = otelCodes.Ok
 		desc = "Forbidden"
-	case 404:
+	case status == 404:
 		code = otelCodes.Ok
 		desc = "Not Found"
-	case 405:
+	case status == 405:
 		code = otelCodes.Ok
 		desc = "Method Not Allowed"
-	case 500:
+	case status == 500:
 		code = otelCodes.Error
 		desc = "Internal Server Error"
-	case 502:
+	case status == 502:
 		code = otelCodes.Error
 		desc = "Bad Gateway"
-	case 503:
+	case status == 503:
 		code = otelCodes.Error
 		desc = "Service Unavailable"
 	default:
-		code = otelCodes.Error
-		desc = "Unknown"
+		code = otelCodes.Unset
+		desc = ""
 	}
 	return
 }

@@ -219,7 +219,7 @@ func TestSpanStatus(t *testing.T) {
 			expected: struct {
 				code codes.Code
 				desc string
-			}{code: codes.Error, desc: "Unknown"},
+			}{code: codes.Unset, desc: ""},
 		},
 	}
 

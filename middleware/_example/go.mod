@@ -9,7 +9,7 @@ go 1.21.0
 
 require (
 	github.com/gin-gonic/gin v1.9.1
-	github.com/twistingmercury/telemetry v0.0.0-00010101000000-000000000000
+	github.com/twistingmercury/telemetry v0.9.0
 	github.com/twistingmercury/telemetry/middleware/gin v0.0.0-00010101000000-000000000000
 	go.opentelemetry.io/otel/exporters/stdout/stdoutmetric v1.26.0
 	go.opentelemetry.io/otel/exporters/stdout/stdouttrace v1.26.0

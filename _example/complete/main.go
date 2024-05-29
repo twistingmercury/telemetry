@@ -55,9 +55,9 @@ func main() {
 		log.Panicf("failed to initialize old_elemetry: %s", err)
 	}
 
-	metrics.Initialize("9090", "complete", "example")
+	metrics.InitializeWithPort("9090", "complete", "example")
 
-	// 4. Initialize the tracing functionality
+	// 4. InitializeWithPort the tracing functionality
 	tex, err := stdouttrace.New(stdouttrace.WithPrettyPrint())
 	if err != nil {
 		// fail fast!

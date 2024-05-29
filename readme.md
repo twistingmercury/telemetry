@@ -3,13 +3,13 @@
 [![codecov](https://codecov.io/github/twistingmercury/telemetry/graph/badge.svg?token=U6C4TE88OP)](https://codecov.io/github/twistingmercury/telemetry)
 # Telemetry Package
 
-The Telemetry package is a Go library that provides a set of utgo buililities for logging, metrics, and tracing in Go applications. It integrates with the OpenTelemetry framework to provide a standardized way of collecting and exporting telemetry data.
+This package was created to help me reduce a bunch of repetitive tasks in creating a Go application. All of the apps and services need logging, distributed tracing, and metrics.
 
 ## Features
 
-- Logging: The package provides a logging system built on top of the Zerolog library. It supports various log levels (debug, info, warn, error, fatal, panic) and allows adding custom key-value pairs to log messages. The logging system also integrates with OpenTelemetry tracing to include trace and span information in log messages.
+- Logging: The package provides a logging system built on top of the [zerolog](https://pkg.go.dev/github.com/rs/zerolog)   library. It supports various log levels (debug, info, warn, error, fatal, panic) and allows adding custom key-value pairs to log messages. The logging system also integrates with OpenTelemetry tracing to include trace and span information in log messages.
 
-- Metrics: The package integrates with OpenTelemetry metrics to collect and export application metrics. It provides a simple way to initialize a meter provider and meter instance, which can be used to record metrics throughout the application. The package allows configuring the batching duration for the metrics periodic reader.
+- Metrics: The package utilizes [Prometheus](https://pkg.go.dev/github.com/prometheus/client_golang/prometheus) to collect metrics. It provides a simple way to initialize a metrics collector, which can be used to record metrics throughout the application.
 
 - Tracing: The package integrates with OpenTelemetry tracing to collect and export trace data. It provides functions to initialize a tracer provider, extract trace context from incoming requests, and start new spans for outgoing requests or internal operations. The package allows configuring the batching duration for the tracing batch processor.
 
@@ -48,7 +48,7 @@ To use the metrics system, first initialize it with an exporter and common attri
 ```go
 import "github.com/twistingmercury/telemetry/metrics"
 
-err := metrics.Initialize(exporter, attribs)
+err := metrics.InitializeWithPort(exporter, attribs)
 if err != nil {
     // Handle initialization error
 }
@@ -69,7 +69,7 @@ To use the tracing system, first initialize it with an exporter, sampling rate, 
 ```go
 import "github.com/twistingmercury/telemetry/tracing"
 
-err := tracing.Initialize(exporter, 1.0, attribs)
+err := tracing.InitializeWithPort(exporter, 1.0, attribs)
 if err != nil {
     // Handle initialization error
 }
@@ -82,14 +82,6 @@ ctx := tracing.ExtractContext(ctx, carrier)
 ctx, span := tracing.StartSpan(ctx, "my_span", oteltrace.SpanKindServer)
 defer span.End()
 ```
-
-## Configuration
-
-The `attribs.NewWithBatchDuration` function allows you to specify the batching duration for the metrics periodic reader and the tracing batch processor. If the batching duration is not provided or set to 0, default values of 1,000 millisecond for metrics and 5,000 milliseconds for tracing will be used.
-
-## Middleware
-
-If you are using the Gin web framework, you can also check out the [Telemetry Middleware](./middleware/readme.md) package, which provides middleware for instrumenting and tracing incoming HTTP requests.
 
 ## Contributing
 

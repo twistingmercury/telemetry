@@ -137,6 +137,7 @@ func traceInfo(spanCtx *trace.SpanContext) (tMap map[string]any) {
 	return
 }
 
+// MergeMaps takes any two maps and combines them.
 func MergeMaps(m1 map[string]any, m2 map[string]any) map[string]any {
 	merged := make(map[string]any)
 	for k, v := range m1 {

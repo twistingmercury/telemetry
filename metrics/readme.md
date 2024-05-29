@@ -1,5 +1,6 @@
 #  Package: metrics
 
+This repository contains middleware for [gin and gonic](https://github.com/gin-gonic/gin) using [github.com/prometheus/client_golang]( https://pkg.go.dev/github.com/prometheus/client_golang/prometheus).
 
 ## Installation
 
@@ -11,12 +12,12 @@ go get -u github.com/twistingmercury/telemetry
 
 This is the general process for initializing the metrics:
 
-1. Initialize the metrics with the `metrics.Initialize` function. This function must be called first. This function takes three parameters:
+1. InitializeWithPort the metrics with the `metrics.InitializeWithPort` function. This function must be called first. This function takes three parameters:
     * The port to expose the metrics on (a valid port is a number between 1024 and 49151)
     * The namespace used to help identify the metrics
     * The name of the service, api, etc., the metrics will be associated with.
 
-2. Register any custom metrics with the `metrics.RegisterCustomMetrics` function. This function takes one or more
+2. Register any custom metrics with the `metrics.RegisterMetrics` function. This function takes one or more
    `prometheus.Collector` instances. Creating a `prometheus.Collector` is beyond the scope of this document. See
    the [prometheus documentation](https://pkg.go.dev/github.com/prometheus/client_golang/prometheus@v1.17.0#pkg-types)
    for more information.
@@ -28,7 +29,7 @@ This is the general process for initializing the metrics:
 ### Instrumenting packages
 
 You can instrument any function by creating one or more `prometheus.Collector` types and registering it with the 
-`metrics.RegisterCustomMetrics` function. The below code sample demonstrates basic usage:
+`metrics.RegisterMetrics` function. The below code sample demonstrates basic usage:
 
 1. Add a func to the package in which you will define all the metrics for that package:
 
@@ -93,14 +94,14 @@ You can instrument any function by creating one or more `prometheus.Collector` t
     }
    ```
 
-4. Finally, register the custom metrics with the `metrics.RegisterCustomMetrics` function before you make the call to publish:
+4. Finally, register the custom metrics with the `metrics.RegisterMetrics` function before you make the call to publish:
 
     ```go
     func main(){
         // initialize other stuff, like logging, configuration, etc., ...
    
         customMetrics := somePkg.Metrics()
-        metrics.RegisterCustomMetrics(customMetrics...)
+        metrics.RegisterMetrics(customMetrics...)
         metrics.Publish()
    
         // start whatever the service should be doing...

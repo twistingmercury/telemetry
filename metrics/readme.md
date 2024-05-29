@@ -1,100 +1,108 @@
-# Metrics Package
+#  Package: metrics
 
-The Metrics package is a Go library that provides a simple and convenient way to collect and export application metrics using OpenTelemetry. It allows you to initialize a meter provider and meter instance, which can be used to create and record metrics throughout your application.
-
-## Features
-
-- Easy initialization of the OpenTelemetry meter provider and meter instance
-- Integration with common attribs for consistent metric labeling
-- Support for various metric types, such as counters, gauges, and histograms
-- Exporting metrics to external systems using OpenTelemetry exporters
-- Configurable batching duration for the metrics periodic reader
 
 ## Installation
 
-To install the Metrics package, use the following command:
+```bash
+go get -u github.com/twistingmercury/telemetry
+```
 
-```
-go get github.com/twistingmercury/telemetry/metrics
-```
+## Initialization
+
+This is the general process for initializing the metrics:
+
+1. Initialize the metrics with the `metrics.Initialize` function. This function must be called first. This function takes three parameters:
+    * The port to expose the metrics on (a valid port is a number between 1024 and 49151)
+    * The namespace used to help identify the metrics
+    * The name of the service, api, etc., the metrics will be associated with.
+
+2. Register any custom metrics with the `metrics.RegisterCustomMetrics` function. This function takes one or more
+   `prometheus.Collector` instances. Creating a `prometheus.Collector` is beyond the scope of this document. See
+   the [prometheus documentation](https://pkg.go.dev/github.com/prometheus/client_golang/prometheus@v1.17.0#pkg-types)
+   for more information.
+
+3. Publish the metrics with the `metrics.Publish` function. This function takes no parameters.
 
 ## Usage
 
-### Initialization
+### Instrumenting packages
 
-Before using the Metrics package, you need to initialize it with an exporter and common attribs:
+You can instrument any function by creating one or more `prometheus.Collector` types and registering it with the 
+`metrics.RegisterCustomMetrics` function. The below code sample demonstrates basic usage:
 
-```go
-import (
-    "github.com/twistingmercury/telemetry/attribs"
-    "github.com/twistingmercury/telemetry/metrics"
-)
+1. Add a func to the package in which you will define all the metrics for that package:
 
-exporter := // Create an OpenTelemetry exporter
-attribs := attribs.New("namespace", "service", "1.0.0", "production")
+    ```go  
+    package 
+    
+    // Metrics returns the metrics that are defined for the data package.
+    func Metrics() []prometheus.Collector {
+        labels := []string{ "pkg", "func", "is_error"}
+    
+        totalCalls = prometheus.NewCounterVec(prometheus.CounterOpts{
+            Namespace: metrics.Namespace(),     // You can use the namespace set during initialization, or use a different one.
+            Name:      "<api_name>_<package>_total_calls", // I typically use package name as a prefix.
+            Help:      "The total count of calls to the funcs in the package"},
+            labels)
+    
+        callDuration = prometheus.NewHistogramVec(prometheus.HistogramOpts{
+            Namespace: metrics.Namespace(),
+            Name:      "<api_name>_<package>_data_call_duration",
+            Help:      "Duration each func call within the package",
+            Buckets:   prometheus.ExponentialBuckets(0.1, 1.5, 5),
+        }, labels)
+    
+        return []prometheus.Collector{totalCalls, callDuration}
+    }
+    ```
 
-err := metrics.Initialize(exporter, attribs)
-if err != nil {
-    // Handle initialization error
-}
-```
+2. To help with incrementing the counters, I like to add a helper func as well:
 
-- `exporter` is an instance of an OpenTelemetry exporter that will be used to export the collected metrics. You can use any compatible exporter, such as Prometheus, Jaeger, or OTLP.
-- `attribs` is an instance of `attribs.Attributes` that contains common attribs to be included in every metric.
+   ```go
+    func incMetrics(fName string, d float64, err error) {
+        tCtr.WithLabelValues("examples", "data", fName, strconv.FormatBool(err != nil)).Inc()
+        dHist.WithLabelValues("examples", "data", fName, "DoDatabaseStuff").Observe(d)
+    }
+   ```
+4. Then invoke the `incMetrics` func as appropriate:
 
-### Creating and Recording Metrics
+   ```go
+    func DoStuff() (err error) {
+    s := time.Now()
+    defer func() {
+        duration := float64(time.Since(s))
+        incMetrics("DoStuff", duration, err)
+    }()
+    
+        src := rand.NewSource(time.Now().UnixNano())
+        rnd := rand.New(src)
+    
+        minSleep := 10
+        maxSleep := 100
+    
+        // simulate some random latency
+        time.Sleep(time.Duration(rnd.Intn(maxSleep-minSleep)+minSleep) * time.Millisecond)
+    
+        // simulate a random error...
+        if rnd.Intn(24)%7 == 0 {
+            err = fmt.Errorf("random simulated error")
+            return
+        }
+    
+        return
+    }
+   ```
 
-After initialization, you can create and record metrics using the meter instance:
+4. Finally, register the custom metrics with the `metrics.RegisterCustomMetrics` function before you make the call to publish:
 
-```go
-meter := metrics.Meter()
-counter := meter.NewInt64Counter("my_counter")
-counter.Add(ctx, 1, attribute.String("key", "value"))
-```
-
-- `meter.NewInt64Counter` creates a new int64 counter metric with the given name.
-- `counter.Add` records a value of 1 for the counter metric, with an additional attribute key-value pair.
-
-The Metrics package supports various metric types, such as counters, gauges, and histograms. Refer to the OpenTelemetry Go SDK documentation for more details on creating and recording different types of metrics.
-
-### Accessing the Meter and Meter Provider
-
-The Metrics package provides functions to access the initialized meter and meter provider:
-
-```go
-meter := metrics.Meter()
-meterProvider := metrics.MeterProvider()
-```
-
-- `metrics.Meter()` returns the initialized meter instance.
-- `metrics.MeterProvider()` returns the initialized meter provider instance.
-
-These functions can be used to access the meter and meter provider from different parts of your application.
-
-## Configuration
-
-### Exporter
-
-The Metrics package requires an OpenTelemetry exporter to be provided during initialization. You can configure the exporter based on your specific requirements, such as the export interval, endpoint, and authentication.
-
-Refer to the documentation of the specific OpenTelemetry exporter you are using for more details on configuring the exporter.
-
-### Batching Duration
-
-The Metrics package allows you to configure the batching duration for the metrics periodic reader. The batching duration determines the frequency at which the collected metrics are exported.
-
-To set the batching duration, use the `attribs.NewWithBatchDuration` function when creating the common attribs:
-
-```go
-attribs := attribs.NewWithBatchDuration("namespace", "service", "1.0.0", "production", 5*time.Second)
-```
-
-If the batching duration is not provided or set to 0, a default value of 60 seconds will be used.
-
-## Contributing
-
-Contributions to the Metrics package are welcome! If you find any issues or have suggestions for improvements, please open an issue or submit a pull request on the GitHub repository.
-
-## License
-
-The Metrics package is open-source and released under the [MIT License](../LICENSE).
+    ```go
+    func main(){
+        // initialize other stuff, like logging, configuration, etc., ...
+   
+        customMetrics := somePkg.Metrics()
+        metrics.RegisterCustomMetrics(customMetrics...)
+        metrics.Publish()
+   
+        // start whatever the service should be doing...
+   }
+    ```

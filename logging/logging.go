@@ -36,14 +36,6 @@ func toMap(values ...KeyValue) map[string]any {
 	return m
 }
 
-func FromMap(m map[string]any) []KeyValue {
-	values := make([]KeyValue, 0, len(m))
-	for k, v := range m {
-		values = append(values, KeyValue{Key: k, Value: v})
-	}
-	return values
-}
-
 // Initialize initializes the logging system.
 // It returns a logger that can be used to log messages, though it is not required.
 func Initialize(level zerolog.Level, attribs attributes.Attributes, writer io.Writer) (err error) {

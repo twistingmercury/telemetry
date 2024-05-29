@@ -7,7 +7,6 @@ import (
 	"github.com/twistingmercury/telemetry/metrics"
 	"github.com/twistingmercury/telemetry/tracing"
 	"go.opentelemetry.io/otel/codes"
-	"go.opentelemetry.io/otel/exporters/stdout/stdoutmetric"
 	"go.opentelemetry.io/otel/exporters/stdout/stdouttrace"
 	otelmetric "go.opentelemetry.io/otel/metric"
 	"go.opentelemetry.io/otel/trace"
@@ -56,27 +55,7 @@ func main() {
 		log.Panicf("failed to initialize old_elemetry: %s", err)
 	}
 
-	// 3. Initialize the metrics and any counters, gauges, etc.
-	mex, err := stdoutmetric.New(stdoutmetric.WithPrettyPrint())
-	if err != nil {
-		// fail fast!
-		logging.Panic(err, "failed to create metrics exporter")
-	}
-
-	err = metrics.Initialize(mex, opt)
-	if err != nil {
-		// fail fast!
-		logging.Panic(err, "failed to initialize metrics")
-	}
-
-	meterCounter, err = metrics.Meter().Int64Counter(
-		fmt.Sprintf("%s.%s.request.count", opt.Namespace(), opt.ServiceName()),
-		otelmetric.WithDescription("Measures the number of times echo was called."),
-		otelmetric.WithUnit("{count}"))
-
-	if err != nil {
-		logging.Panic(err, "failed to the counter")
-	}
+	metrics.Initialize("9090", "complete", "example")
 
 	// 4. Initialize the tracing functionality
 	tex, err := stdouttrace.New(stdouttrace.WithPrettyPrint())
@@ -84,6 +63,7 @@ func main() {
 		// fail fast!
 		logging.Panic(err, "failed to create trace exporter")
 	}
+
 	err = tracing.Initialize(tex, 1.0, opt)
 	if err != nil {
 		// fail fast!

@@ -35,7 +35,7 @@ exporter := // Create an OpenTelemetry exporter
 sampleRate := 1.0 // Set the desired sampling rate
 attribs := attribs.New("namespace", "service", "1.0.0", "production")
 
-err := tracing.Initialize(exporter, sampleRate, attribs)
+err := tracing.InitializeWithPort(exporter, sampleRate, attribs)
 if err != nil {
     // Handle initialization error
 }
@@ -105,7 +105,7 @@ The sampling rate is set during the initialization of the Tracing package:
 
 ```go
 sampleRate := 1.0 // Set the desired sampling rate
-err := tracing.Initialize(exporter, sampleRate, attribs)
+err := tracing.InitializeWithPort(exporter, sampleRate, attribs)
 ```
 
 ## Contributing

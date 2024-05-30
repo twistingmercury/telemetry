@@ -4,22 +4,16 @@ import (
 	"bufio"
 	"context"
 	"fmt"
+	"github.com/rs/zerolog"
+	"github.com/twistingmercury/telemetry/logging"
 	"github.com/twistingmercury/telemetry/metrics"
 	"github.com/twistingmercury/telemetry/tracing"
 	"go.opentelemetry.io/otel/codes"
-	"go.opentelemetry.io/otel/exporters/stdout/stdoutmetric"
 	"go.opentelemetry.io/otel/exporters/stdout/stdouttrace"
 	otelmetric "go.opentelemetry.io/otel/metric"
 	"go.opentelemetry.io/otel/trace"
 	"log"
 	"os"
-	"time"
-
-	"github.com/rs/zerolog"
-	"github.com/twistingmercury/telemetry/attributes"
-	"github.com/twistingmercury/telemetry/logging"
-
-	"go.opentelemetry.io/otel/attribute"
 )
 
 var (
@@ -34,59 +28,25 @@ const (
 )
 
 func main() {
-	otherAttribs := []attribute.KeyValue{
-		attribute.String("build-date", time.Now().Format(time.RFC3339)),
-		attribute.String("commit", "ca45gf32"),
-		attribute.Int("my-attribute", 123),
-	}
-
-	// 1. Create the commonly used attributes for logging, metrics, and tracing
-	opt := attributes.NewWithBatchDuration(
-		namespace,
-		serviceName,
-		version,
-		environment,
-		100*time.Millisecond, // set very short batching duration for demonstration purposes
-		otherAttribs...)
-
-	// 2. initialize logging functionality
+	// 1. initialize logging
 	//    from this point forward use the logging package to log messages
-	err := logging.Initialize(zerolog.DebugLevel, opt, os.Stdout)
-	if err != nil {
+	if err := logging.Initialize(zerolog.DebugLevel, os.Stdout, serviceName, version, environment); err != nil {
 		log.Panicf("failed to initialize old_elemetry: %s", err)
 	}
 
-	// 3. Initialize the metrics and any counters, gauges, etc.
-	mex, err := stdoutmetric.New(stdoutmetric.WithPrettyPrint())
-	if err != nil {
-		// fail fast!
-		logging.Panic(err, "failed to create metrics exporter")
+	// 2. initialize metrics
+	if err := metrics.Initialize("complete", "example"); err != nil {
+		log.Panicf("failed to initialize metrics: %s", err)
 	}
 
-	err = metrics.Initialize(mex, opt)
-	if err != nil {
-		// fail fast!
-		logging.Panic(err, "failed to initialize metrics")
-	}
-
-	meterCounter, err = metrics.Meter().Int64Counter(
-		fmt.Sprintf("%s.%s.request.count", opt.Namespace(), opt.ServiceName()),
-		otelmetric.WithDescription("Measures the number of times echo was called."),
-		otelmetric.WithUnit("{count}"))
-
-	if err != nil {
-		logging.Panic(err, "failed to the counter")
-	}
-
-	// 4. Initialize the tracing functionality
+	// 3. initialize tracing
 	tex, err := stdouttrace.New(stdouttrace.WithPrettyPrint())
 	if err != nil {
 		// fail fast!
 		logging.Panic(err, "failed to create trace exporter")
 	}
-	err = tracing.Initialize(tex, 1.0, opt)
-	if err != nil {
-		// fail fast!
+
+	if err := tracing.Initialize(tex, serviceName, version, environment); err != nil {
 		logging.Panic(err, "failed to initialize tracing")
 	}
 
@@ -98,7 +58,7 @@ func main() {
 func echo(stopChan chan struct{}) {
 	// Make sure to start the span before logging so that the span context is available. This is important
 	// for the trace to be able to corrolate the logs to the trace.
-	_, span := tracing.StartSpan(context.Background(), "echo", trace.SpanKindServer)
+	_, span := tracing.Start(context.Background(), "echo", trace.SpanKindServer)
 	sctx := span.SpanContext()
 	logging.InfoWithContext(&sctx, "echoing")
 

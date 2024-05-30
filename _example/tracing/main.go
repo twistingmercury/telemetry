@@ -5,7 +5,6 @@ import (
 	"log"
 	"time"
 
-	"github.com/twistingmercury/telemetry/attributes"
 	"github.com/twistingmercury/telemetry/tracing"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/exporters/stdout/stdouttrace"
@@ -14,13 +13,6 @@ import (
 
 func main() {
 	// Create common attributes
-	attribs := attributes.NewWithBatchDuration(
-		"namespace",
-		"service",
-		"1.0.0",
-		"production",
-		10*time.Millisecond, // set very short batching duration for demonstration purposes
-		attribute.String("custom_key", "custom_value"))
 
 	// Create an OpenTelemetry stdout exporter
 	exporter, err := stdouttrace.New()
@@ -28,8 +20,8 @@ func main() {
 		log.Fatal("Failed to create stdout exporter:", err)
 	}
 
-	// Initialize the Tracing package with the exporter, sampling rate, and common attributes
-	err = tracing.Initialize(exporter, 1.0, attribs)
+	// InitializeWithSampleRate the Tracing package with the exporter, sampling rate, and common attributes
+	err = tracing.Initialize(exporter, "namespace", "v1.0.0", "example")
 	if err != nil {
 		log.Fatal("Failed to initialize Tracing package:", err)
 	}
@@ -37,8 +29,8 @@ func main() {
 	// Create a context
 	ctx := context.Background()
 
-	// Start a new span
-	ctx, span := tracing.StartSpan(ctx, "main", oteltrace.SpanKindServer,
+	// StartSpan a new span
+	ctx, span := tracing.Start(ctx, "main", oteltrace.SpanKindServer,
 		attribute.String("operation", "example"))
 	defer span.End()
 
@@ -47,7 +39,7 @@ func main() {
 	time.Sleep(1 * time.Second)
 
 	// Start a child span
-	ctx, childSpan := tracing.StartSpan(ctx, "child_operation", oteltrace.SpanKindServer,
+	ctx, childSpan := tracing.Start(ctx, "child_operation", oteltrace.SpanKindServer,
 		attribute.String("child_key", "child_value"))
 	defer childSpan.End()
 

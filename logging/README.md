@@ -27,7 +27,7 @@ Before using the Logging package, you need to initialize it with the desired log
 ```go
 import "github.com/twistingmercury/telemetry/logging"
 
-err := logging.Initialize(zerolog.DebugLevel, attribs, os.Stdout)
+err := logging.InitializeWithPort(zerolog.DebugLevel, attribs, os.Stdout)
 if err != nil {
     // Handle initialization error
 }

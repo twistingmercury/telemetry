@@ -2,7 +2,6 @@ package logging
 
 import (
 	"errors"
-	"github.com/twistingmercury/telemetry/attributes"
 	"go.opentelemetry.io/otel/trace"
 	"io"
 	"os"
@@ -36,17 +35,9 @@ func toMap(values ...KeyValue) map[string]any {
 	return m
 }
 
-func FromMap(m map[string]any) []KeyValue {
-	values := make([]KeyValue, 0, len(m))
-	for k, v := range m {
-		values = append(values, KeyValue{Key: k, Value: v})
-	}
-	return values
-}
-
 // Initialize initializes the logging system.
 // It returns a logger that can be used to log messages, though it is not required.
-func Initialize(level zerolog.Level, attribs attributes.Attributes, writer io.Writer) (err error) {
+func Initialize(level zerolog.Level, writer io.Writer, serviceName, serviceVersion, environment string) (err error) {
 
 	if writer == nil {
 		return errors.New("writer is required")
@@ -59,9 +50,9 @@ func Initialize(level zerolog.Level, attribs attributes.Attributes, writer io.Wr
 	logger = zerolog.New(writer).
 		With().
 		Timestamp().
-		Str("service", attribs.ServiceName()).
-		Str("version", attribs.ServiceVersion()).
-		Str("env", attribs.Environment()).
+		Str("service", serviceName).
+		Str("version", serviceVersion).
+		Str("environment", environment).
 		Logger()
 
 	return
@@ -145,6 +136,7 @@ func traceInfo(spanCtx *trace.SpanContext) (tMap map[string]any) {
 	return
 }
 
+// MergeMaps takes any two maps and combines them.
 func MergeMaps(m1 map[string]any, m2 map[string]any) map[string]any {
 	merged := make(map[string]any)
 	for k, v := range m1 {

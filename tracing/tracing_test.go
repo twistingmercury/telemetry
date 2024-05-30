@@ -4,51 +4,40 @@ import (
 	"context"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/twistingmercury/telemetry/attributes"
 	"github.com/twistingmercury/telemetry/tracing"
-	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/propagation"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	oteltrace "go.opentelemetry.io/otel/trace"
 	"testing"
 )
 
+const (
+	serviceName    = "test-service"
+	serviceVersion = "1.0.0"
+	environment    = "unit-test"
+)
+
 type mockExporter struct {
 	sdktrace.SpanExporter
 }
 
-func testAttributes() attributes.Attributes {
-	return attributes.New(
-		"test_namespace",
-		"test_service",
-		"1.0.0",
-		"test_env",
-		attribute.String("key1", "value1"),
-		attribute.Int("key2", 123),
-	)
-}
-
 func TestInitialize(t *testing.T) {
 	exporter := &mockExporter{}
-	attribs := testAttributes()
 
-	err := tracing.Initialize(exporter, 1.0, attribs)
+	err := tracing.InitializeWithSampleRate(exporter, 1.0, serviceName, serviceVersion, environment)
 	require.NoError(t, err)
 
 	tracer := tracing.Tracer()
 	assert.NotNil(t, tracer)
+
+	err = tracing.InitializeWithSampleRate(exporter, 0.0, serviceName, serviceVersion, environment)
+	require.Error(t, err)
+
 }
 
 func TestInitializeWithNilExporter(t *testing.T) {
-	attribs := testAttributes()
-	err := tracing.Initialize(nil, 1.0, attribs)
-	assert.Error(t, err, "Initialize should return an error when exporter is nil")
-}
-
-func TestInitializeWithNilAttributes(t *testing.T) {
-	exporter := new(mockExporter)
-	err := tracing.Initialize(exporter, 1.0, nil)
-	assert.Error(t, err, "Initialize should return an error when attributes is nil")
+	err := tracing.Initialize(nil, serviceName, serviceVersion, environment)
+	assert.Error(t, err, "InitializeWithSampleRate should return an error when exporter is nil")
 }
 
 func TestExtractContext(t *testing.T) {
@@ -62,20 +51,19 @@ func TestExtractContext(t *testing.T) {
 	// Assert that the extracted context is not nil
 	assert.NotNil(t, extractedCtx, "extracted context should not be nil")
 }
-func TestStartSpan(t *testing.T) {
+func TestStart(t *testing.T) {
 	// Create a mock exporter and attributes
 	exporter := new(mockExporter)
-	attribs := testAttributes()
 
-	// Initialize the tracing package
-	err := tracing.Initialize(exporter, 1.0, attribs)
-	require.NoError(t, err, "Initialize should not return an error")
+	// InitializeWithSampleRate the tracing package
+	err := tracing.Initialize(exporter, serviceName, serviceVersion, environment)
+	require.NoError(t, err, "InitializeWithSampleRate should not return an error")
 
 	// Create a test context
 	ctx := context.Background()
 
-	// Start a span using the StartSpan function
-	spanCtx, span := tracing.StartSpan(ctx, "test-span", oteltrace.SpanKindServer)
+	// StartSpan a span using the StartSpan function
+	spanCtx, span := tracing.Start(ctx, "test-span", oteltrace.SpanKindServer)
 	defer span.End()
 
 	// Assert that the span context and span are not nil

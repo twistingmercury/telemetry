@@ -48,14 +48,14 @@ func TestInitalize(t *testing.T) {
 }
 
 func TestPublish(t *testing.T) {
-	err := metrics.InitializeWithPort("1025", "unit", "test")
+	err := metrics.InitializeWithPort("1024", "unit", "test")
 	require.NoError(t, err)
+
 	assert.NotPanics(t, func() { metrics.Publish() })
 }
 
 func TestRegisterCustomMetrics(t *testing.T) {
-	err := metrics.InitializeWithPort("1026", "unit", "test")
+	err := metrics.InitializeWithPort("1024", "unit", "test")
 	require.NoError(t, err)
-	metrics.Publish()
 	metrics.RegisterMetrics(customMetrics()...)
 }

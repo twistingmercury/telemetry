@@ -19,7 +19,6 @@ var (
 	nspace   string
 	registry *prometheus.Registry
 	server   *http.Server
-	router   *gin.Engine
 )
 
 // Namespace returns the Namespace for the metrics of the API.
@@ -70,17 +69,18 @@ func InitializeWithPort(port string, namespace, serviceName string) error {
 
 // Publish exposes the metrics for scraping.
 func Publish() {
-	gin.SetMode(gin.ReleaseMode)
-	router = gin.New()
-	router.Use(gin.Recovery())
-	promHandler := promhttp.HandlerFor(registry, promhttp.HandlerOpts{})
-	router.GET("/metrics", gin.WrapH(promHandler))
-	server = &http.Server{
-		Addr:    fmt.Sprintf(":%s", mPort),
-		Handler: router.Handler(),
-	}
 	go func() {
-		if err := server.ListenAndServe(); err != nil {
+		gin.SetMode(gin.ReleaseMode)
+		router := gin.New()
+		router.Use(gin.Recovery())
+		promHandler := promhttp.HandlerFor(registry, promhttp.HandlerOpts{})
+		router.GET("/metrics", gin.WrapH(promHandler))
+		server = &http.Server{
+			Addr:    fmt.Sprintf(":%s", mPort),
+			Handler: router.Handler(),
+		}
+
+		if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			log.Panic().Err(err).Msg("metrics endpoint failed with error")
 		}
 	}()

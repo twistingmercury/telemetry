@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"os/exec"
 	"time"
 
 	"github.com/twistingmercury/telemetry/metrics"
@@ -39,8 +40,16 @@ func main() {
 
 	for i := 0; i < 5; i++ {
 		_ = data.DoDatabaseStuff()
-		time.Sleep(2 * time.Second)
+		time.Sleep(1 * time.Second)
 	}
+
+	fmt.Printf("\n\nusing curl to scrape metrics from port 9090:\n")
+	curl := exec.Command("curl", "http://localhost:9090/metrics")
+	bits, err := curl.CombinedOutput()
+	if err != nil {
+		log.Fatalf("Error executing curl: %s\n", err.Error())
+	}
+	fmt.Printf("%s\n\n", string(bits))
 
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Print("press any key to quit> ")

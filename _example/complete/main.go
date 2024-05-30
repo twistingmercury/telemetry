@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"context"
+	"example/metrics/data"
 	"fmt"
 	"github.com/rs/zerolog"
 	"github.com/twistingmercury/telemetry/logging"
@@ -13,6 +14,7 @@ import (
 	"go.opentelemetry.io/otel/trace"
 	"log"
 	"os"
+	"time"
 )
 
 const (
@@ -29,11 +31,6 @@ func main() {
 		log.Fatalf("failed to initialize old_elemetry: %s", err)
 	}
 
-	// 2. initialize metrics
-	if err := metrics.Initialize(namespace, serviceName); err != nil {
-		log.Fatalf("failed to initialize metrics: %s", err)
-	}
-
 	// 3. initialize tracing
 	tex, err := stdouttrace.New(stdouttrace.WithPrettyPrint())
 	if err != nil {
@@ -43,6 +40,20 @@ func main() {
 
 	if err := tracing.Initialize(tex, serviceName, version, environment); err != nil {
 		logging.Fatal(err, "failed to initialize tracing")
+	}
+
+	// 2. initialize metrics
+	if err := metrics.Initialize(namespace, serviceName); err != nil {
+		log.Fatalf("failed to initialize metrics: %s", err)
+	}
+
+	metrics.RegisterMetrics(data.Metrics()...)
+
+	metrics.Publish()
+
+	for i := 0; i < 5; i++ {
+		_ = data.DoDatabaseStuff()
+		time.Sleep(250 * time.Millisecond)
 	}
 
 	stopChan := make(chan struct{})

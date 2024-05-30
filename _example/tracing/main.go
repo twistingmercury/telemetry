@@ -1,8 +1,10 @@
 package main
 
 import (
+	"bufio"
 	"context"
 	"log"
+	"os"
 	"time"
 
 	"github.com/twistingmercury/telemetry/tracing"
@@ -21,7 +23,7 @@ func main() {
 	// Create common attributes
 
 	// Create an OpenTelemetry stdout exporter
-	exporter, err := stdouttrace.New()
+	exporter, err := stdouttrace.New(stdouttrace.WithPrettyPrint())
 	if err != nil {
 		log.Fatal("Failed to create stdout exporter:", err)
 	}
@@ -68,9 +70,7 @@ func main() {
 
 	// End the main span
 	span.End()
-
-	log.Println("Tracing example completed. press ctrl+c to exit.")
-
-	// Sleep for a while to allow the exporter to process the spans
-	time.Sleep(1 * time.Second)
+	log.Print("Give it a few moments to process the traces. press ctrl+c to exit> ")
+	reader := bufio.NewReader(os.Stdin)
+	_, _ = reader.ReadString('\n')
 }

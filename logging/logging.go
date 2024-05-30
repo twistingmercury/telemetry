@@ -2,7 +2,6 @@ package logging
 
 import (
 	"errors"
-	"github.com/twistingmercury/telemetry/attributes"
 	"go.opentelemetry.io/otel/trace"
 	"io"
 	"os"
@@ -38,7 +37,7 @@ func toMap(values ...KeyValue) map[string]any {
 
 // Initialize initializes the logging system.
 // It returns a logger that can be used to log messages, though it is not required.
-func Initialize(level zerolog.Level, attribs attributes.Attributes, writer io.Writer) (err error) {
+func Initialize(level zerolog.Level, writer io.Writer, serviceName, serviceVersion, environment string) (err error) {
 
 	if writer == nil {
 		return errors.New("writer is required")
@@ -51,9 +50,9 @@ func Initialize(level zerolog.Level, attribs attributes.Attributes, writer io.Wr
 	logger = zerolog.New(writer).
 		With().
 		Timestamp().
-		Str("service", attribs.ServiceName()).
-		Str("version", attribs.ServiceVersion()).
-		Str("env", attribs.Environment()).
+		Str("service", serviceName).
+		Str("version", serviceVersion).
+		Str("environment", environment).
 		Logger()
 
 	return

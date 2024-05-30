@@ -13,7 +13,7 @@ This package was created to help me reduce a bunch of repetitive tasks in creati
 
 - Tracing: The package integrates with OpenTelemetry tracing to collect and export trace data. It provides functions to initialize a tracer provider, extract trace context from incoming requests, and start new spans for outgoing requests or internal operations. The package allows configuring the batching duration for the tracing batch processor.
 
-- Common Attributes: The package defines a common set of attribs that can be used across logging, metrics, and tracing. These attribs include service name, service version, namespace, and environment. The package provides an `Attributes` interface and a default implementation for convenience.
+- Common Attributes: The package defines a common set of attribs that can be used across logging, metrics, and tracing. These attribs include service name, service version, namespace, and env. The package provides an `Attributes` interface and a default implementation for convenience.
 
 ## Installation
 

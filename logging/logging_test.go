@@ -9,52 +9,24 @@ import (
 
 	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
-	"github.com/twistingmercury/telemetry/attributes"
 	"github.com/twistingmercury/telemetry/logging"
 	"go.opentelemetry.io/otel/trace"
 )
 
-type mockAttributes struct {
-	attributes.Attributes
-	mock.Mock
-}
-
-func (m *mockAttributes) ServiceName() string {
-	args := m.Called()
-	return args.String(0)
-}
-
-func (m *mockAttributes) ServiceVersion() string {
-	args := m.Called()
-	return args.String(0)
-}
-
-func (m *mockAttributes) Environment() string {
-	args := m.Called()
-	return args.String(0)
-}
+const (
+	serviceName    = "test-service"
+	serviceVersion = "1.0.0"
+	environment    = "unit-test"
+)
 
 func TestInitialize(t *testing.T) {
-
-	attribs := new(mockAttributes)
-	attribs.On("ServiceName").Return("test-service")
-	attribs.On("ServiceVersion").Return("1.0.0")
-	attribs.On("Environment").Return("test")
-
 	var buf bytes.Buffer
-
-	err := logging.Initialize(zerolog.DebugLevel, attribs, &buf)
+	err := logging.Initialize(zerolog.DebugLevel, &buf, serviceName, serviceVersion, environment)
 	assert.NoError(t, err, "Initialize should not return an error")
-
-	attribs.AssertCalled(t, "ServiceName")
-	attribs.AssertCalled(t, "ServiceVersion")
-	attribs.AssertCalled(t, "Environment")
 }
 
 func TestInitializeWithNilWriter(t *testing.T) {
-	attribs := new(mockAttributes)
-	err := logging.Initialize(zerolog.DebugLevel, attribs, nil)
+	err := logging.Initialize(zerolog.DebugLevel, nil, serviceName, serviceVersion, environment)
 	assert.Error(t, err, "Initialize should return an error when writer is nil")
 }
 
@@ -63,16 +35,10 @@ func TestLoggingWithSpanContext(t *testing.T) {
 		logging.SetExitFunction(os.Exit)
 	}()
 	logging.SetExitFunction(func(int) {})
-
-	attribs := new(mockAttributes)
-	attribs.On("ServiceName").Return("test-service")
-	attribs.On("ServiceVersion").Return("1.0.0")
-	attribs.On("Environment").Return("test")
-
 	// Create a buffer to capture the log output
 	var buf bytes.Buffer
 
-	err := logging.Initialize(zerolog.DebugLevel, attribs, &buf)
+	err := logging.Initialize(zerolog.DebugLevel, &buf, serviceName, serviceVersion, environment)
 	assert.NoError(t, err, "Initialize should not return an error")
 
 	traceID := trace.TraceID{0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x10}
@@ -116,14 +82,9 @@ func TestLoggingWithNilSpanContext(t *testing.T) {
 	}()
 	logging.SetExitFunction(func(int) {})
 
-	attribs := new(mockAttributes)
-	attribs.On("ServiceName").Return("test-service")
-	attribs.On("ServiceVersion").Return("1.0.0")
-	attribs.On("Environment").Return("test")
-
 	var buf bytes.Buffer
 
-	err := logging.Initialize(zerolog.DebugLevel, attribs, &buf)
+	err := logging.Initialize(zerolog.DebugLevel, &buf, serviceName, serviceVersion, environment)
 	assert.NoError(t, err, "Initialize should not return an error")
 
 	// Log messages with different levels using a nil span context
@@ -159,15 +120,10 @@ func TestLoggingWithoutSpanContext(t *testing.T) {
 		logging.SetExitFunction(os.Exit)
 	}()
 	logging.SetExitFunction(func(int) {})
-	// Create a mock attributes
-	attribs := new(mockAttributes)
-	attribs.On("ServiceName").Return("test-service")
-	attribs.On("ServiceVersion").Return("1.0.0")
-	attribs.On("Environment").Return("test")
 
 	var buf bytes.Buffer
 
-	err := logging.Initialize(zerolog.DebugLevel, attribs, &buf)
+	err := logging.Initialize(zerolog.DebugLevel, &buf, serviceName, serviceVersion, environment)
 	assert.NoError(t, err, "Initialize should not return an error")
 
 	logging.Debug("Debug message", logging.KeyValue{Key: "key1", Value: "value1"})

@@ -10,44 +10,39 @@ import (
 	"github.com/twistingmercury/telemetry/tracing"
 	"go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/exporters/stdout/stdouttrace"
-	otelmetric "go.opentelemetry.io/otel/metric"
 	"go.opentelemetry.io/otel/trace"
 	"log"
 	"os"
 )
 
-var (
-	meterCounter otelmetric.Int64Counter
-)
-
 const (
 	namespace   = "example"
-	serviceName = "monex"
+	serviceName = "scooby"
 	version     = "0.0.1"
-	environment = "dev"
+	environment = "local"
 )
 
 func main() {
 	// 1. initialize logging
 	//    from this point forward use the logging package to log messages
 	if err := logging.Initialize(zerolog.DebugLevel, os.Stdout, serviceName, version, environment); err != nil {
-		log.Panicf("failed to initialize old_elemetry: %s", err)
+		log.Fatalf("failed to initialize old_elemetry: %s", err)
 	}
 
 	// 2. initialize metrics
-	if err := metrics.Initialize("complete", "example"); err != nil {
-		log.Panicf("failed to initialize metrics: %s", err)
+	if err := metrics.Initialize(namespace, serviceName); err != nil {
+		log.Fatalf("failed to initialize metrics: %s", err)
 	}
 
 	// 3. initialize tracing
 	tex, err := stdouttrace.New(stdouttrace.WithPrettyPrint())
 	if err != nil {
 		// fail fast!
-		logging.Panic(err, "failed to create trace exporter")
+		logging.Fatal(err, "failed to create trace exporter")
 	}
 
 	if err := tracing.Initialize(tex, serviceName, version, environment); err != nil {
-		logging.Panic(err, "failed to initialize tracing")
+		logging.Fatal(err, "failed to initialize tracing")
 	}
 
 	stopChan := make(chan struct{})
@@ -66,7 +61,6 @@ func echo(stopChan chan struct{}) {
 	fmt.Print("press enter to continue example> ")
 	_, _ = reader.ReadString('\n')
 
-	meterCounter.Add(context.Background(), 1)
 	span.SetStatus(codes.Ok, "OK")
 	span.End()
 

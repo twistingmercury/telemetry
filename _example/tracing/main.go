@@ -11,6 +11,12 @@ import (
 	oteltrace "go.opentelemetry.io/otel/trace"
 )
 
+const (
+	serviceName = "scooby"
+	version     = "0.0.1"
+	environment = "local"
+)
+
 func main() {
 	// Create common attributes
 
@@ -21,9 +27,9 @@ func main() {
 	}
 
 	// InitializeWithSampleRate the Tracing package with the exporter, sampling rate, and common attributes
-	err = tracing.Initialize(exporter, "namespace", "v1.0.0", "example")
+	err = tracing.Initialize(exporter, serviceName, version, environment)
 	if err != nil {
-		log.Fatal("Failed to initialize Tracing package:", err)
+		log.Fatal("failed to initialize tracing package:", err)
 	}
 
 	// Create a context

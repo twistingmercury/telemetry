@@ -5,19 +5,21 @@ import (
 	"os"
 
 	"github.com/rs/zerolog"
-	"github.com/twistingmercury/telemetry/attributes"
 	"github.com/twistingmercury/telemetry/logging"
-	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 )
 
+const (
+	serviceName = "scooby"
+	version     = "0.0.1"
+	environment = "dev"
+)
+
 func main() {
-	// Create attributes attributes
-	attribs := attributes.New("namespace", "service", "1.0.0", "production",
-		attribute.String("custom_key", "custom_value"))
+	// Create attributes attribute
 
 	// Initialize the logging system
-	err := logging.Initialize(zerolog.DebugLevel, attribs, os.Stdout)
+	err := logging.Initialize(zerolog.DebugLevel, os.Stdout, serviceName, version, environment)
 	if err != nil {
 		panic(err)
 	}

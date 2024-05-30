@@ -29,6 +29,10 @@ func TestInitialize(t *testing.T) {
 
 	tracer := tracing.Tracer()
 	assert.NotNil(t, tracer)
+
+	err = tracing.InitializeWithSampleRate(exporter, 0.0, serviceName, serviceVersion, environment)
+	require.Error(t, err)
+
 }
 
 func TestInitializeWithNilExporter(t *testing.T) {

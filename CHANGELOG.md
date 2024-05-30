@@ -10,7 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added a new fuction `metrics.Registry` to expose the `prometheus.Registry` for use directly by the `github.com/twistingmercury/telemetry/middleware` package.
 
 ### Updated
-- Updated examples to make them more comprehensive.git a
+- Updated examples to make them more comprehensive.
+- Clarified examples and instructions in README files.
 
 ## [1.0.0] - 20214-05-30
 

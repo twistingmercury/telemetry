@@ -65,7 +65,7 @@ You can instrument any function by creating one or more `prometheus.Collector` t
         dHist.WithLabelValues("examples", "data", fName, "DoDatabaseStuff").Observe(d)
     }
    ```
-4. Then invoke the `incMetrics` func as appropriate:
+3. Then invoke the `incMetrics` func as appropriate:
 
    ```go
     func DoStuff() (err error) {
@@ -100,6 +100,7 @@ You can instrument any function by creating one or more `prometheus.Collector` t
     func main(){
         // initialize other stuff, like logging, configuration, etc., ...
    
+        metrics.Initialize("my-namespace", "my-service")
         customMetrics := somePkg.Metrics()
         metrics.RegisterMetrics(customMetrics...)
         metrics.Publish()

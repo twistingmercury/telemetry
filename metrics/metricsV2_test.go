@@ -42,6 +42,7 @@ func TestInitializePanics(t *testing.T) {
 func TestInitalize(t *testing.T) {
 	err := metrics.InitializeWithPort("1024", "unit", "test")
 	require.NoError(t, err)
+	assert.NotNil(t, metrics.Registry())
 	assert.Equal(t, "unit", metrics.Namespace())
 	assert.Equal(t, "test", metrics.ServiceName())
 	assert.Equal(t, "1024", metrics.Port())

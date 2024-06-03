@@ -36,6 +36,11 @@ func Port() string {
 	return mPort
 }
 
+// Registry returns the internal [prometheus.Registry] so it can be used directly if required.
+func Registry() *prometheus.Registry {
+	return registry
+}
+
 // Initialize initializes metrics system on the default port 9090.
 func Initialize(namespace, serviceName string) error {
 	return InitializeWithPort(defaultPort, namespace, serviceName)

@@ -12,6 +12,7 @@ import (
 	"github.com/rs/zerolog/pkgerrors"
 )
 
+
 const (
 	TraceIDAttr = "otel.trace_id"
 	SpanIDAttr  = "otel.span_id"

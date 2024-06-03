@@ -1,12 +1,7 @@
 package data
 
 import (
-	"context"
 	"fmt"
-	"github.com/twistingmercury/telemetry/logging"
-	"github.com/twistingmercury/telemetry/tracing"
-	"go.opentelemetry.io/otel/codes"
-	oteltrace "go.opentelemetry.io/otel/trace"
 	"math/rand"
 	"strconv"
 	"time"
@@ -49,13 +44,8 @@ func Metrics() (c []prometheus.Collector) {
 
 // DoDatabaseStuff simulates a database call.
 func DoDatabaseStuff() (err error) {
-	_, span := tracing.Start(context.Background(), "database_stuff", oteltrace.SpanKindInternal)
-	spanCtx := span.SpanContext()
-	logging.InfoWithContext(&spanCtx, "doing database stuff")
 	s := time.Now()
 	defer func() {
-		span.SetStatus(codes.Ok, "ok")
-		span.End()
 		duration := float64(time.Since(s))
 		incMetrics("DoDatabaseStuff", duration, err)
 	}()

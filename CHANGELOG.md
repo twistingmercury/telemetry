@@ -5,7 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.0.0] - 20214-05-31
+## [1.0.1] - 20214-05-30
+### Added
+- Added a new fuction `metrics.Registry` to expose the `prometheus.Registry` for use directly by the `github.com/twistingmercury/telemetry/middleware` package.
+
+### Updated
+- Updated examples to make them more comprehensive.
+- Clarified examples and instructions in README files.
+
+## [1.0.0] - 20214-05-30
 
 ### Breaking Changes
 - Changed to using Prometheus as means of creating metrics.
@@ -48,6 +56,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - OTel Distributed Tracing
 - OTel metrics
 
+[1.0.1]: https://github.com/twistingmercury/telemetry/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/twistingmercury/telemetry/compare/v0.9.2...v1.0.0
 [0.9.2]: https://github.com/twistingmercury/telemetry/compare/v0.9.1...v0.9.2
 [0.9.1]: https://github.com/twistingmercury/telemetry/compare/v0.9.0...v0.9.1

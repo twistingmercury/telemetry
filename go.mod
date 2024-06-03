@@ -1,4 +1,4 @@
-module github.com/twistingmercury/telemetry/middleware
+module github.com/twistingmercury/telemetry
 
 go 1.21.0
 
@@ -8,7 +8,7 @@ require (
 	github.com/prometheus/client_golang v1.19.1
 	github.com/rs/zerolog v1.32.0
 	github.com/stretchr/testify v1.9.0
-	github.com/twistingmercury/telemetry v1.0.0
+
 	go.opentelemetry.io/otel v1.27.0
 	go.opentelemetry.io/otel/sdk v1.27.0
 	go.opentelemetry.io/otel/trace v1.27.0

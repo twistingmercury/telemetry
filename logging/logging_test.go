@@ -10,6 +10,7 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/assert"
 	"github.com/twistingmercury/telemetry/logging"
+
 	"go.opentelemetry.io/otel/trace"
 )
 
@@ -32,9 +33,9 @@ func TestInitializeWithNilWriter(t *testing.T) {
 
 func TestLoggingWithSpanContext(t *testing.T) {
 	defer func() {
-		logging.SetExitFunction(os.Exit)
+		logging.SetExitFunc(os.Exit)
 	}()
-	logging.SetExitFunction(func(int) {})
+	logging.SetExitFunc(func(int) {})
 	// Create a buffer to capture the log output
 	var buf bytes.Buffer
 
@@ -78,9 +79,9 @@ func TestLoggingWithSpanContext(t *testing.T) {
 
 func TestLoggingWithNilSpanContext(t *testing.T) {
 	defer func() {
-		logging.SetExitFunction(os.Exit)
+		logging.SetExitFunc(os.Exit)
 	}()
-	logging.SetExitFunction(func(int) {})
+	logging.SetExitFunc(func(int) {})
 
 	var buf bytes.Buffer
 
@@ -117,9 +118,9 @@ func TestLoggingWithNilSpanContext(t *testing.T) {
 
 func TestLoggingWithoutSpanContext(t *testing.T) {
 	defer func() {
-		logging.SetExitFunction(os.Exit)
+		logging.SetExitFunc(os.Exit)
 	}()
-	logging.SetExitFunction(func(int) {})
+	logging.SetExitFunc(func(int) {})
 
 	var buf bytes.Buffer
 

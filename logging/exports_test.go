@@ -1,6 +1,6 @@
 package logging
 
-func SetExitFunction(f func(int)) {
+func SetExitFunc(f func(int)) {
 	exitFunc = f
 }
 

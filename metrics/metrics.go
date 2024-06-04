@@ -1,6 +1,7 @@
 package metrics
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
@@ -14,11 +15,13 @@ import (
 const defaultPort = "9090"
 
 var (
-	apiName  string
-	mPort    string
-	nspace   string
-	registry *prometheus.Registry
-	server   *http.Server
+	apiName           string
+	mPort             string
+	nspace            string
+	registry          *prometheus.Registry
+	server            *http.Server
+	ctx               context.Context
+	registeredMetrics []prometheus.Collector
 )
 
 // Namespace returns the Namespace for the metrics of the API.
@@ -42,13 +45,13 @@ func Registry() *prometheus.Registry {
 }
 
 // Initialize initializes metrics system on the default port 9090.
-func Initialize(namespace, serviceName string) error {
-	return InitializeWithPort(defaultPort, namespace, serviceName)
+func Initialize(context context.Context, namespace, serviceName string) error {
+	return InitializeWithPort(context, defaultPort, namespace, serviceName)
 }
 
 // InitializeWithPort initializes metrics with a specific port to publish metrics on.
 // This must be called before any metrics are registered.
-func InitializeWithPort(port string, namespace, serviceName string) error {
+func InitializeWithPort(context context.Context, port string, namespace, serviceName string) error {
 	if len(port) == 0 {
 		return errors.New("port for metrics must be specified")
 	}
@@ -65,7 +68,9 @@ func InitializeWithPort(port string, namespace, serviceName string) error {
 	}
 
 	registry = prometheus.NewRegistry()
+	registeredMetrics = make([]prometheus.Collector, 0)
 
+	ctx = context
 	mPort = port
 	nspace = namespace
 	apiName = serviceName
@@ -92,7 +97,19 @@ func Publish() {
 	log.Info().Msg("metrics endpoint started")
 }
 
+// Shutdown ensures the server for the prom metrics is shutdown cleanly.
+func Shutdown() error {
+	if err := server.Shutdown(ctx); err != nil {
+		return err
+	}
+	for _, metric := range registeredMetrics {
+		_ = registry.Unregister(metric)
+	}
+	return nil
+}
+
 // RegisterMetrics is used to add one to or more metrics (collectors) to the registry.
 func RegisterMetrics(cMetrics ...prometheus.Collector) {
+	registeredMetrics = append(registeredMetrics, cMetrics...)
 	registry.MustRegister(cMetrics...)
 }

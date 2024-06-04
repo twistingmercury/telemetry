@@ -1,4 +1,4 @@
-#  Package: metrics
+#  Package: Metrics
 
 This repository contains middleware for [gin and gonic](https://github.com/gin-gonic/gin) using [github.com/prometheus/client_golang]( https://pkg.go.dev/github.com/prometheus/client_golang/prometheus).
 

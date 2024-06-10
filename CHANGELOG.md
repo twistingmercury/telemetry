@@ -5,7 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.0.1] - 20214-05-30
+## [1.0.2] - 2024-06-10
+### Added
+- Added a new fuction `metrics.Stop` to explicitly shutdown the metrics http server.
+- Updated `metrics.Publish` to use an [http.Server] instead of [gin.Engine] `Run`.
+
+## [1.0.1] - 2024-05-30
 ### Added
 - Added a new fuction `metrics.Registry` to expose the `prometheus.Registry` for use directly by the `github.com/twistingmercury/telemetry/middleware` package.
 
@@ -13,7 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated examples to make them more comprehensive.
 - Clarified examples and instructions in README files.
 
-## [1.0.0] - 20214-05-30
+## [1.0.0] - 2024-05-30
 
 ### Breaking Changes
 - Changed to using Prometheus as means of creating metrics.

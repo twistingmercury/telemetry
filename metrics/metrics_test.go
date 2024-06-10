@@ -1,12 +1,13 @@
 package metrics_test
 
 import (
+	"context"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/twistingmercury/telemetry/metrics"
 	"testing"
-
-	"github.com/prometheus/client_golang/prometheus"
-	"github.com/stretchr/testify/assert"
+	"time"
 )
 
 // Metrics returns a slice of prometheus.Collector that can be registered
@@ -30,17 +31,19 @@ func customMetrics() (c []prometheus.Collector) {
 }
 
 func TestInitializePanics(t *testing.T) {
-	assert.Error(t, metrics.InitializeWithPort("", "unit", "test"))
-	assert.Error(t, metrics.InitializeWithPort("1023", "unit", "test"))
-	assert.Error(t, metrics.InitializeWithPort("49152", "unit", "test"))
-	assert.Error(t, metrics.InitializeWithPort("1234", "", "test"))
-	assert.Error(t, metrics.InitializeWithPort("1234", "unit", ""))
-	assert.Error(t, metrics.Initialize("unit", ""))
-	assert.Error(t, metrics.Initialize("", "test"))
+	ctx := context.TODO()
+	assert.Error(t, metrics.InitializeWithPort(ctx, "", "unit", "test"))
+	assert.Error(t, metrics.InitializeWithPort(ctx, "1023", "unit", "test"))
+	assert.Error(t, metrics.InitializeWithPort(ctx, "49152", "unit", "test"))
+	assert.Error(t, metrics.InitializeWithPort(ctx, "1234", "", "test"))
+	assert.Error(t, metrics.InitializeWithPort(ctx, "1234", "unit", ""))
+	assert.Error(t, metrics.Initialize(ctx, "unit", ""))
+	assert.Error(t, metrics.Initialize(ctx, "", "test"))
 }
 
 func TestInitalize(t *testing.T) {
-	err := metrics.InitializeWithPort("1024", "unit", "test")
+	ctx := context.TODO()
+	err := metrics.InitializeWithPort(ctx, "1024", "unit", "test")
 	require.NoError(t, err)
 	assert.NotNil(t, metrics.Registry())
 	assert.Equal(t, "unit", metrics.Namespace())
@@ -49,14 +52,12 @@ func TestInitalize(t *testing.T) {
 }
 
 func TestPublish(t *testing.T) {
-	err := metrics.InitializeWithPort("1024", "unit", "test")
-	require.NoError(t, err)
-
-	assert.NotPanics(t, func() { metrics.Publish() })
-}
-
-func TestRegisterCustomMetrics(t *testing.T) {
-	err := metrics.InitializeWithPort("1024", "unit", "test")
-	require.NoError(t, err)
+	ctx := context.TODO()
+	err := metrics.InitializeWithPort(ctx, "1024", "unit", "test")
 	metrics.RegisterMetrics(customMetrics()...)
+	require.NoError(t, err)
+	metrics.Publish()
+	time.Sleep(2 * time.Second)
+	err = metrics.Shutdown()
+	assert.NoError(t, err)
 }

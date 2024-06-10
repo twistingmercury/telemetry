@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.0.3] - 2024-06-10
 ### Added
-- Added a new fuction `metrics.Stop` to explicitly shutdown the metrics http server.
+- Added a new function `metrics.Shutdown` to explicitly shutdown the metrics http server.
 - Updated `metrics.Publish` to use an [http.Server] instead of [gin.Engine] `Run`.
 
 ## [1.0.2] - 2024-06-03

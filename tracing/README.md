@@ -60,6 +60,7 @@ defer span.End()
 ```
 
 - `tracing.ExtractContext` extracts the trace context from the provided carrier and returns a new context with the extracted trace information.
+- `tracing.ExtractSpan` extracts the Otel span from the provided context.
 - `tracing.StartSpan` starts a new span with the given name and span kind, and returns a new context with the span attached and the created span.
 - `span.End()` ends the span when the operation is complete.
 

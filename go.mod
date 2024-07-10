@@ -2,6 +2,10 @@ module github.com/twistingmercury/telemetry/v2
 
 go 1.21.0
 
+retract (
+	v2.0.0
+)
+
 require (
 	github.com/gin-gonic/gin v1.10.0
 	github.com/pkg/errors v0.9.1

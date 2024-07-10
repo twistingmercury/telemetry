@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.1] - 2024-07-10
+
+### Fixed
+- Had to update module path to `../v2` since it was a major verion update.
+
+### Changed
+- Retracted v2.0.0
+
 ## [2.0.0] - 2024-07-10
 ### Updated
 - Updated logging functions to accept `context.Context` which is used for tracing data extraction.
@@ -78,6 +86,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - OTel Distributed Tracing
 - OTel metrics
 
+[2.0.1]: https://github.com/twistingmercury/telemetry/compare/v2.0.0...v2.0.1
 [2.0.0]: https://github.com/twistingmercury/telemetry/compare/v1.0.3...v2.0.0
 [1.0.3]: https://github.com/twistingmercury/telemetry/compare/v1.0.2...v1.0.3
 [1.0.2]: https://github.com/twistingmercury/telemetry/compare/v1.0.1...v1.0.2

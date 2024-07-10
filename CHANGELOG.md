@@ -5,10 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.1.0] - 2024-07-10
+## [2.0.0] - 2024-07-10
 ### Updated
 - Updated logging functions to accept `context.Context` which is used for tracing data extraction.
 - Marked logging `..WithContext` functions as deprecated.
+
+### Breaking Changes
+- The function `logging.Debug` now accepts the `context.Context`
+- The function `logging.Info` now accepts the `context.Context`
+- The function `logging.Warn` now accepts the `context.Context`
+- The function `logging.Error` now accepts the `context.Context`
+- The function `logging.Fatal` now accepts the `context.Context`
+- The function `logging.Panic` now accepts the `context.Context`
 
 ## [1.0.3] - 2024-06-10
 ### Added

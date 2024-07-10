@@ -62,7 +62,7 @@ func Initialize(level zerolog.Level, writer io.Writer, serviceName, serviceVersi
 // DebugWithContext logs a debug message and adds the trace id and span id found in the ctx.
 // The args are key value pairs and are optional.
 //
-// Deprecated: use Debug func instead which extracts tracing data from the context automatically.
+// Deprecated: use Debug func instead. It extracts tracing data from the context automatically.
 func DebugWithContext(spanCtx *trace.SpanContext, message string, args ...KeyValue) {
 	tInf := traceInfo(spanCtx)
 	margs := MergeMaps(toMap(args...), tInf)
@@ -74,7 +74,7 @@ func DebugWithContext(spanCtx *trace.SpanContext, message string, args ...KeyVal
 // InfoWithContext logs an info message and adds the trace id and span id found in the ctx.
 // The args are key value pairs and are optional.
 //
-// Deprecated: use Info func instead which extracts tracing data from the context automatically.
+// Deprecated: use Info func instead. It extracts tracing data from the context automatically.
 func InfoWithContext(spanCtx *trace.SpanContext, message string, args ...KeyValue) {
 	tInf := traceInfo(spanCtx)
 	margs := MergeMaps(toMap(args...), tInf)
@@ -86,7 +86,7 @@ func InfoWithContext(spanCtx *trace.SpanContext, message string, args ...KeyValu
 // WarnWithContext logs a warning message and adds the trace id and span id found in the ctx.
 // The args are key value pairs and are optional.
 //
-// Deprecated: use Warn func instead which extracts tracing data from the context automatically.
+// Deprecated: use Warn func instead. It extracts tracing data from the context automatically.
 func WarnWithContext(spanCtx *trace.SpanContext, message string, args ...KeyValue) {
 	tInf := traceInfo(spanCtx)
 	margs := MergeMaps(toMap(args...), tInf)
@@ -97,7 +97,7 @@ func WarnWithContext(spanCtx *trace.SpanContext, message string, args ...KeyValu
 
 // ErrorWithContext logs an error message and adds the trace id and span id found in the ctx.
 //
-// Deprecated: use Error func instead which extracts tracing data from the context automatically.
+// Deprecated: use Error func instead. It extracts tracing data from the context automatically.
 func ErrorWithContext(spanCtx *trace.SpanContext, err error, message string, args ...KeyValue) {
 	tInf := traceInfo(spanCtx)
 	margs := MergeMaps(toMap(args...), tInf)
@@ -110,7 +110,7 @@ func ErrorWithContext(spanCtx *trace.SpanContext, err error, message string, arg
 
 // FatalWithContext logs a fatal message and adds the trace id and span id found in the ctx.
 //
-// Deprecated: use Fatal func instead which extracts tracing data from the context automatically.
+// Deprecated: use Fatal func instead. It extracts tracing data from the context automatically.
 func FatalWithContext(spanCtx *trace.SpanContext, err error, message string, args ...KeyValue) {
 	tInf := traceInfo(spanCtx)
 	margs := MergeMaps(toMap(args...), tInf)

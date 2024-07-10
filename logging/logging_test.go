@@ -12,7 +12,7 @@ import (
 
 	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/assert"
-	"github.com/twistingmercury/telemetry/logging"
+	"github.com/twistingmercury/telemetry/v2/logging"
 
 	"go.opentelemetry.io/otel/trace"
 )

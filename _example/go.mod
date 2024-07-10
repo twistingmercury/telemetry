@@ -2,12 +2,12 @@ module example
 
 go 1.21.0
 
-replace github.com/twistingmercury/telemetry => ../
+replace github.com/twistingmercury/telemetry/v2 => ../
 
 require (
 	github.com/prometheus/client_golang v1.19.1
 	github.com/rs/zerolog v1.33.0
-	github.com/twistingmercury/telemetry v1.0.0
+	github.com/twistingmercury/telemetry/v2 v2.0.0
 	go.opentelemetry.io/otel v1.27.0
 	go.opentelemetry.io/otel/exporters/stdout/stdouttrace v1.27.0
 	go.opentelemetry.io/otel/trace v1.27.0

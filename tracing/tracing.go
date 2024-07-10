@@ -89,11 +89,6 @@ func ExtractContext(ctx context.Context, carrier propagation.TextMapCarrier) con
 	return propagator.Extract(ctx, carrier)
 }
 
-// ExtractSpan returns the Otel tracing [Span] from the [context.Context]
-func ExtractSpan(ctx context.Context) oteltrace.Span {
-	return oteltrace.SpanFromContext(ctx)
-}
-
 func Start(ctx context.Context, name string, kind oteltrace.SpanKind, attribs ...attribute.KeyValue) (spanCtx context.Context, span oteltrace.Span) {
 	commonAttrs = append(commonAttrs, attribs...)
 

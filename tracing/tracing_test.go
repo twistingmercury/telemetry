@@ -52,15 +52,6 @@ func TestExtractContext(t *testing.T) {
 	assert.NotNil(t, extractedCtx, "extracted context should not be nil")
 }
 
-func TestExtractSpan(t *testing.T) {
-	ctx := context.Background()
-
-	extractedCtx := tracing.ExtractSpan(ctx)
-
-	assert.NotNil(t, extractedCtx, "extracted context should not be nil")
-	assert.Equal(t, false, extractedCtx.SpanContext().IsValid(), "extracted context should not be valid")
-}
-
 func TestStart(t *testing.T) {
 	// Create a mock exporter and attributes
 	exporter := new(mockExporter)

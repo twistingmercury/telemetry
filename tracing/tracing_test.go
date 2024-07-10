@@ -51,6 +51,7 @@ func TestExtractContext(t *testing.T) {
 	// Assert that the extracted context is not nil
 	assert.NotNil(t, extractedCtx, "extracted context should not be nil")
 }
+
 func TestStart(t *testing.T) {
 	// Create a mock exporter and attributes
 	exporter := new(mockExporter)

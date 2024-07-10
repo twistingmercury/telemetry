@@ -1,6 +1,7 @@
 package logging
 
 import (
+	"context"
 	"errors"
 	"go.opentelemetry.io/otel/trace"
 	"io"
@@ -11,7 +12,6 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/pkgerrors"
 )
-
 
 const (
 	TraceIDAttr = "otel.trace_id"
@@ -59,8 +59,10 @@ func Initialize(level zerolog.Level, writer io.Writer, serviceName, serviceVersi
 	return
 }
 
-// DebugWithContext logs a debug message and adds the trace id and span id fount in the ctx.
+// DebugWithContext logs a debug message and adds the trace id and span id found in the ctx.
 // The args are key value pairs and are optional.
+//
+// Deprecated: use Debug func instead. It extracts tracing data from the context automatically.
 func DebugWithContext(spanCtx *trace.SpanContext, message string, args ...KeyValue) {
 	tInf := traceInfo(spanCtx)
 	margs := MergeMaps(toMap(args...), tInf)
@@ -69,8 +71,10 @@ func DebugWithContext(spanCtx *trace.SpanContext, message string, args ...KeyVal
 		Msg(message)
 }
 
-// InfoWithContext logs an info message and adds the trace id and span id fount in the ctx.
+// InfoWithContext logs an info message and adds the trace id and span id found in the ctx.
 // The args are key value pairs and are optional.
+//
+// Deprecated: use Info func instead. It extracts tracing data from the context automatically.
 func InfoWithContext(spanCtx *trace.SpanContext, message string, args ...KeyValue) {
 	tInf := traceInfo(spanCtx)
 	margs := MergeMaps(toMap(args...), tInf)
@@ -79,8 +83,10 @@ func InfoWithContext(spanCtx *trace.SpanContext, message string, args ...KeyValu
 		Msg(message)
 }
 
-// WarnWithContext logs a warning message and adds the trace id and span id fount in the ctx.
+// WarnWithContext logs a warning message and adds the trace id and span id found in the ctx.
 // The args are key value pairs and are optional.
+//
+// Deprecated: use Warn func instead. It extracts tracing data from the context automatically.
 func WarnWithContext(spanCtx *trace.SpanContext, message string, args ...KeyValue) {
 	tInf := traceInfo(spanCtx)
 	margs := MergeMaps(toMap(args...), tInf)
@@ -89,7 +95,9 @@ func WarnWithContext(spanCtx *trace.SpanContext, message string, args ...KeyValu
 		Msg(message)
 }
 
-// ErrorWithContext logs an error message and adds the trace id and span id fount in the ctx.
+// ErrorWithContext logs an error message and adds the trace id and span id found in the ctx.
+//
+// Deprecated: use Error func instead. It extracts tracing data from the context automatically.
 func ErrorWithContext(spanCtx *trace.SpanContext, err error, message string, args ...KeyValue) {
 	tInf := traceInfo(spanCtx)
 	margs := MergeMaps(toMap(args...), tInf)
@@ -100,7 +108,9 @@ func ErrorWithContext(spanCtx *trace.SpanContext, err error, message string, arg
 		Msg(message)
 }
 
-// FatalWithContext logs a fatal message and adds the trace id and span id fount in the ctx.
+// FatalWithContext logs a fatal message and adds the trace id and span id found in the ctx.
+//
+// Deprecated: use Fatal func instead. It extracts tracing data from the context automatically.
 func FatalWithContext(spanCtx *trace.SpanContext, err error, message string, args ...KeyValue) {
 	tInf := traceInfo(spanCtx)
 	margs := MergeMaps(toMap(args...), tInf)
@@ -128,7 +138,7 @@ func traceInfo(spanCtx *trace.SpanContext) (tMap map[string]any) {
 		return
 	}
 
-	if !spanCtx.TraceID().IsValid() {
+	if !spanCtx.IsValid() || !spanCtx.IsSampled() {
 		return
 	}
 
@@ -149,49 +159,70 @@ func MergeMaps(m1 map[string]any, m2 map[string]any) map[string]any {
 	return merged
 }
 
-// Debug logs a debug message.
-func Debug(message string, args ...KeyValue) {
+// Debug logs a debug message. Tracing data (if present) is automatically retrieved from the [context.Context].
+func Debug(ctx context.Context, message string, args ...KeyValue) {
+	fields := MergeMaps(toMap(args...), getTracingAttributes(ctx))
+
 	logger.Debug().
-		Fields(toMap(args...)).
+		Fields(fields).
 		Msg(message)
 }
 
-// Info logs an info message.
-func Info(message string, args ...KeyValue) {
+// Info logs an info message. Tracing data (if present) is automatically retrieved from the [context.Context].
+func Info(ctx context.Context, message string, args ...KeyValue) {
+	fields := MergeMaps(toMap(args...), getTracingAttributes(ctx))
+
 	logger.Info().
-		Fields(toMap(args...)).
+		Fields(fields).
 		Msg(message)
 }
 
-// Warn logs a warning message.
-func Warn(message string, args ...KeyValue) {
+// Warn logs a warning message. Tracing data (if present) is automatically retrieved from the [context.Context].
+func Warn(ctx context.Context, message string, args ...KeyValue) {
+	fields := MergeMaps(toMap(args...), getTracingAttributes(ctx))
+
 	logger.Warn().
-		Fields(toMap(args...)).
+		Fields(fields).
 		Msg(message)
 }
 
-// Error logs an error message.
-func Error(err error, message string, args ...KeyValue) {
+// Error logs an error message. Tracing data (if present) is automatically retrieved from the [context.Context].
+func Error(ctx context.Context, err error, message string, args ...KeyValue) {
+	fields := MergeMaps(toMap(args...), getTracingAttributes(ctx))
+
 	logger.Error().
-		Fields(toMap(args...)).
+		Fields(fields).
 		Err(err).
 		Str("is-fatal", "false").
 		Msg(message)
 }
 
-// Fatal logs a fatal message.
-func Fatal(err error, message string, args ...KeyValue) {
+// Fatal logs a fatal message. Tracing data (if present) is automatically retrieved from the [context.Context].
+func Fatal(ctx context.Context, err error, message string, args ...KeyValue) {
+	fields := MergeMaps(toMap(args...), getTracingAttributes(ctx))
+
 	logger.Error().
-		Fields(toMap(args...)).
+		Fields(fields).
 		Err(err).
 		Str("is-fatal", "true").
 		Msg(message)
 	exitFunc(1)
 }
 
-func Panic(err error, message string, args ...KeyValue) {
+// Panic logs a panic
+func Panic(ctx context.Context, err error, message string, args ...KeyValue) {
+	fields := MergeMaps(toMap(args...), getTracingAttributes(ctx))
+
 	logger.Panic().
-		Fields(toMap(args...)).
+		Fields(fields).
 		Err(err).
 		Msg(message)
+}
+
+// getTracingAttributes retrieves tracing data from [context.Context]
+func getTracingAttributes(ctx context.Context) map[string]any {
+	span := trace.SpanFromContext(ctx)
+	spanCtx := span.SpanContext()
+
+	return traceInfo(&spanCtx)
 }

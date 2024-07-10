@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0] - 2024-07-10
+### Updated
+- Updated logging functions to accept `context.Context` which is used for tracing data extraction.
+- Marked logging `..WithContext` functions as deprecated.
+
+### Breaking Changes
+- The function `logging.Debug` now accepts the `context.Context`
+- The function `logging.Info` now accepts the `context.Context`
+- The function `logging.Warn` now accepts the `context.Context`
+- The function `logging.Error` now accepts the `context.Context`
+- The function `logging.Fatal` now accepts the `context.Context`
+- The function `logging.Panic` now accepts the `context.Context`
+
 ## [1.0.3] - 2024-06-10
 ### Added
 - Added a new function `metrics.Shutdown` to explicitly shutdown the metrics http server.
@@ -16,7 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.0.1] - 2024-05-30
 ### Added
-- Added a new fuction `metrics.Registry` to expose the `prometheus.Registry` for use directly by the `github.com/twistingmercury/telemetry/middleware` package.
+- Added a new function `metrics.Registry` to expose the `prometheus.Registry` for use directly by the `github.com/twistingmercury/telemetry/middleware` package.
 
 ### Updated
 - Updated examples to make them more comprehensive.
@@ -34,9 +47,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The function `tracing.StartSpan` has been removed. Use `tracing.Start` instead.
 
 ### Added
-- Added a new fuction `metrics.InitializeWithPort` to accept a port value for publishing metrics.
-- Added a new fuction `tracing.InitializeWithSampleRate` to accept a float64 value for setting the trace sample rate.
-- Added a new fuction `tracing.Start` to replace the deprecated `StartSpan`.
+- Added a new function `metrics.InitializeWithPort` to accept a port value for publishing metrics.
+- Added a new function `tracing.InitializeWithSampleRate` to accept a float64 value for setting the trace sample rate.
+- Added a new function `tracing.Start` to replace the deprecated `StartSpan`.
 
 ### Changed
 - Updated `metrics.InitializeWithSampleRate` to return an error instead of panicking.
